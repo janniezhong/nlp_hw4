@@ -42,7 +42,6 @@ def get_more_candidates(lemma, pos) -> List[str]:
     synsets = wn.synsets(lemma, pos)
     for s in synsets:
         related_syns = [s] + s.hypernyms() + s.hyponyms() #+ s.member_holonyms() + s.member_meronyms()
-            
         for lem in related_syns.lemmas():
             lem_str = str(lem.name())
             lem_str = lem_str.replace("_", " ")
@@ -270,7 +269,8 @@ class BertPredictor(object):
     def best_predict(self, context : Context) -> str:
         lemma = context.lemma
         pos = context.pos
-
+        print(get_candidates(lemma, pos))
+        print(get_more_candidates(lemma, pos))
         synonyms = get_candidates(lemma, pos)
         sentence = ""
         for tok in context.left_context:
@@ -320,5 +320,5 @@ if __name__=="__main__":
         #prediction = wn_frequency_predictor(context)
         #prediction = wn_simple_lesk_predictor(context)
         #prediction = predictor.predict_nearest(context)
-        prediction = predictor.predict(context)
+        prediction = predictor.best_predict(context)
         print("{}.{} {} :: {}".format(context.lemma, context.pos, context.cid, prediction))
