@@ -117,6 +117,8 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             for example in hypernym_syn.examples():
                 definition.append(tokenize(example))
 
+        print(filtered_sentence)
+        print(definition)
         intersection = set(filtered_sentence).intersection(definition)
         num_intersect = len(intersection)
         if num_intersect in overlap_dict:
