@@ -202,9 +202,9 @@ class Word2VecSubst(object):
         max_sim = -1
         nearest_synonym = None
         for synonym in synonyms:
-            sim = self.model.similarity(lemma, synonym)
-            print(lemma)
-            print(synonym)
+            sim = self.model.similarity(str(lemma.name()), synonym)
+            #print(lemma)
+            #print(synonym)
             if sim > max_sim:
                 max_sim = sim
                 nearest_synonym = synonym
