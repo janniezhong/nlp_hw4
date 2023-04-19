@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import string
 
 from lexsub_xml import read_lexsub_xml
 from lexsub_xml import Context 
