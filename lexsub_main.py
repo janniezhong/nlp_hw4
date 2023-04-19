@@ -131,7 +131,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     #compute the max overlap
     max_intersect = max(overlap_dict.keys())
     best_synset = None
-    
+    print(max_intersect)
     weighted_intersect = {}
     # lemma.count()
     if len(overlap_dict[max_intersect]) == 1:
