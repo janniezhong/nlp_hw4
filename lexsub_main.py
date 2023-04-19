@@ -119,7 +119,11 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             for example in hypernym_syn.examples():
                 definition= definition+tokenize(example)
 
-
+        lexemes = syn.lemmas()
+        if len(lexemes) == 1:
+            if lexemes[0].name() == lemma:
+                print("here! 1")
+                continue
         #print("filtered_sentence ", filtered_sentence)
         #print("definition ", definition)
         intersection = list(set(filtered_sentence)&set(definition))
@@ -147,7 +151,6 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             #print("syn ", syn)
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
-                    print("here! 1")
                     continue
             for lexeme in syn.lemmas():
                 #print("lexeme ", lexeme)
@@ -172,7 +175,6 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             #print("syn ", syn)
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
-                    print("here! 2")
                     continue
             for lexeme in syn.lemmas():
                 #print("lexeme ", lexeme)
