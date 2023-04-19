@@ -107,9 +107,10 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         if word not in stop_words:
             filtered_sentence.append(word)
 
+    definition = []
     overlap_dict = {}
     for syn in wn.synsets(lemma, pos):
-        definition = tokenize(syn.definition())
+        definition = definition.append(tokenize(syn.definition()))
         for example in syn.examples():
             definition.append(tokenize(example))
         for hypernym_syn in syn.hypernyms():
