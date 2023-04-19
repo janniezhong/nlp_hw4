@@ -36,6 +36,20 @@ def get_candidates(lemma, pos) -> List[str]:
                 candidates.append(lem_str)
     return candidates 
 
+def get_more_candidates(lemma, pos) -> List[str]:
+    # Part 1
+    candidates = []
+    synsets = wn.synsets(lemma, pos)
+    for s in synsets:
+        related_syns = [s] + s.hypernyms() + s.hyponyms() #+ s.member_holonyms() + s.member_meronyms()
+            
+        for lem in related_syns.lemmas():
+            lem_str = str(lem.name())
+            lem_str = lem_str.replace("_", " ")
+            if lem_str not in candidates and lem_str != lemma:
+                candidates.append(lem_str)
+    return candidates 
+
 def smurf_predictor(context : Context) -> str:
     """
     suggest 'smurf' as a substitute for all words.
@@ -221,7 +235,7 @@ class BertPredictor(object):
         lemma = context.lemma
         pos = context.pos
 
-        synonyms = get_candidates(lemma, pos)
+        synonyms = get_more_candidates(lemma, pos)
         sentence = ""
         for tok in context.left_context:
             if tok.isalpha():
@@ -243,7 +257,41 @@ class BertPredictor(object):
         outputs = self.model.predict(input_mat,verbose = None)
         predictions = outputs[0]
 
-        # print(predictions[0])
+        best_word_preds = np.argsort(predictions[0][mask_id])[::-1]
+        best_words = self.tokenizer.convert_ids_to_tokens(best_word_preds)
+
+        for word in best_words:
+            word_clean = word.replace("_", ' ')
+            if word_clean in synonyms:
+                return word_clean
+
+        return ""
+
+    def best_predict(self, context : Context) -> str:
+        lemma = context.lemma
+        pos = context.pos
+
+        synonyms = get_candidates(lemma, pos)
+        sentence = ""
+        for tok in context.left_context:
+            if tok.isalpha():
+                sentence = sentence + ' ' + tok
+            else:
+                sentence += tok
+
+        sentence = sentence + ' ' + '[MASK]'
+        for tok in context.right_context:
+            if tok.isalpha():
+                sentence = sentence + ' ' + tok
+            else:
+                sentence += tok
+
+        input_toks = self.tokenizer.encode(sentence)
+        sent_tokenized = self.tokenizer.convert_ids_to_tokens(input_toks)
+        mask_id = sent_tokenized.index('[MASK]')
+        input_mat = np.array(input_toks).reshape((1,-1))
+        outputs = self.model.predict(input_mat,verbose = None)
+        predictions = outputs[0]
 
         best_word_preds = np.argsort(predictions[0][mask_id])[::-1]
         best_words = self.tokenizer.convert_ids_to_tokens(best_word_preds)
