@@ -26,7 +26,7 @@ def tokenize(s):
 def get_candidates(lemma, pos) -> List[str]:
     # Part 1
     candidates = []
-    synsets = wn.synsets('lemma', pos)
+    synsets = wn.synsets(lemma, pos)
     for s in synsets:
         for lem in s:
             lem_str = str(lem.name())
@@ -60,7 +60,7 @@ def wn_frequency_predictor(context : Context) -> str:
     # takes lemma, pos, and counts number of candidates
 
     count = {}
-    synsets = wn.synsets('lemma', pos)
+    synsets = wn.synsets(context.lemma, context.pos)
     for s in synsets:
         for lem in s:
             lem_str = str(lem.name())
