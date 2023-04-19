@@ -42,11 +42,12 @@ def get_more_candidates(lemma, pos) -> List[str]:
     synsets = wn.synsets(lemma, pos)
     for s in synsets:
         related_syns = [s] + s.hypernyms() + s.hyponyms() #+ s.member_holonyms() + s.member_meronyms()
-        for lem in related_syns.lemmas():
-            lem_str = str(lem.name())
-            lem_str = lem_str.replace("_", " ")
-            if lem_str not in candidates and lem_str != lemma:
-                candidates.append(lem_str)
+        for s2 in related_syns:
+            for lem in s2.lemmas():
+                lem_str = str(lem.name())
+                lem_str = lem_str.replace("_", " ")
+                if lem_str not in candidates and lem_str != lemma:
+                    candidates.append(lem_str)
     return candidates 
 
 def smurf_predictor(context : Context) -> str:
