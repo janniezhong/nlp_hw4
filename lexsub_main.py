@@ -151,7 +151,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             print("syn ", syn)
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
-                    break
+                    continue
             for lexeme in syn.lemmas():
                 print("lexeme ", lexeme)
                 count += lexeme.count()
