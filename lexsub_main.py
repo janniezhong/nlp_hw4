@@ -122,7 +122,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         lexemes = syn.lemmas()
         if len(lexemes) == 1:
             if lexemes[0].name() == lemma:
-                print("here! 1")
+                #print("here! 1")
                 continue
         #print("filtered_sentence ", filtered_sentence)
         #print("definition ", definition)
@@ -164,8 +164,8 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         best_synset = overlap_dict[max_intersect][0]
     else:
         best_synset_list = overlap_dict[max_intersect]
-        print("best_synset_list:", best_synset_list)
-        print("max_intersect: ", max_intersect)
+        #print("best_synset_list:", best_synset_list)
+        #print("max_intersect: ", max_intersect)
 
         max_count = -1
         # most frequent synset
