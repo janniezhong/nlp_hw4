@@ -147,6 +147,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             #print("syn ", syn)
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
+                    print("here! 1")
                     continue
             for lexeme in syn.lemmas():
                 #print("lexeme ", lexeme)
@@ -170,6 +171,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             #print("syn ", syn)
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
+                    print("here! 2")
                     continue
             for lexeme in syn.lemmas():
                 #print("lexeme ", lexeme)
