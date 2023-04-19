@@ -110,7 +110,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     definition = []
     overlap_dict = {}
     for syn in wn.synsets(lemma, pos):
-        definition = definition.append(tokenize(syn.definition()))
+        definition.append(tokenize(syn.definition()))
         for example in syn.examples():
             definition.append(tokenize(example))
         for hypernym_syn in syn.hypernyms():
