@@ -120,7 +120,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
                 definition= definition+tokenize(example)
 
 
-        intersection = set(filtered_sentence).intersection(definition)
+        intersection = list(set(filtered_sentence)&set(definition))
         num_intersect = len(intersection)
         print("num_intersect:", num_intersect, " and intersection:", intersection)
         if num_intersect in overlap_dict.keys():
