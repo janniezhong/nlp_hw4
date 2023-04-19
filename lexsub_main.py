@@ -274,6 +274,7 @@ class BertPredictor(object):
         pos = context.pos
         # print(get_candidates(lemma, pos))
         # print(get_more_candidates(lemma, pos))
+        get_more_candidates(lemma, pos)
         synonyms = get_candidates(lemma, pos)
         sentence = ""
         for tok in context.left_context:
