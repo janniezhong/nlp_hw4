@@ -243,7 +243,7 @@ class BertPredictor(object):
         outputs = self.model.predict(input_mat)
         predictions = outputs[0]
 
-        print(predictions[0])
+        # print(predictions[0])
 
         best_word_preds = np.argsort(predictions[0][mask_id])[::-1]
         best_words = self.tokenizer.convert_ids_to_tokens(best_word_preds)
