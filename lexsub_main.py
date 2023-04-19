@@ -113,7 +113,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         for example in syn.examples():
             definition= definition+tokenize(example)
         for hypernym_syn in syn.hypernyms():
-            definition.append(tokenize(hypernym_syn.definition()))
+            definition= definition+tokenize(hypernym_syn.definition()))
             for example in hypernym_syn.examples():
                 definition= definition+tokenize(example)
 
