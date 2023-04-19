@@ -122,11 +122,11 @@ def wn_simple_lesk_predictor(context : Context) -> str:
 
         intersection = set(filtered_sentence).intersection(definition)
         num_intersect = len(intersection)
-        if num_intersect in overlap_dict:
+        if num_intersect in overlap_dict.keys():
             overlap_dict[num_intersect].append(syn)
         else:
             overlap_dict[num_intersect] = [syn]
-        print(overlap_dict)
+        # print(overlap_dict)
     
     #compute the max overlap
     max_intersect = max(overlap_dict.keys())
@@ -139,10 +139,10 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     else:
         best_synset_list = overlap_dict[max_intersect]
         max_count = -1
-        count = 0
         # most frequent synset
         for syn in best_synset_list:
             lexemes = syn.lemmas()
+            count = 0
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
                     break
@@ -154,22 +154,18 @@ def wn_simple_lesk_predictor(context : Context) -> str:
                     max_count = count
 
     # most frequent lexeme from synset
-    freq_lex_name = None
+    most_freq_lex = None
     max_count = 0
-    count = {}
     # Get the lemma from the synset
     for lem in best_synset.lemmas():
-        lem_str = str(lem.name())
-        if lem_str != lemma:
-            if lem_str not in count:
-                count[lem_str] = lem.count()
-            else:
-                count[lem_str] += lem.count()
-            if count[lem_str] > max_count:
-                max_count = count[lem_str]
-                freq_lex_name = lem_str
+        if lem.name() != lemma:
+            if lem.count() > max_count:
+                max_count = lem.count()
+                most_freq_lex = lem
+    if max_count == 0:
+        most_freq_lex = best_synset.lemmas()[0]
     
-    return freq_lex_name.replace("_", " ")
+    return most_freq_lex.name().replace("_", " ")
    
 
 class Word2VecSubst(object):
