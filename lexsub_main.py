@@ -122,23 +122,17 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         lexemes = syn.lemmas()
         if len(lexemes) == 1:
             if lexemes[0].name() == lemma:
-                #print("here! 1")
                 continue
-        #print("filtered_sentence ", filtered_sentence)
-        #print("definition ", definition)
         intersection = list(set(filtered_sentence)&set(definition))
         num_intersect = len(intersection)
-        #print("num_intersect:", num_intersect, " and intersection:", intersection)
         if num_intersect in overlap_dict.keys():
             overlap_dict[num_intersect].append(syn)
         else:
             overlap_dict[num_intersect] = [syn]
-    #print("overlap_dict: ", overlap_dict)
     
     #compute the max overlap
     max_intersect = max(overlap_dict.keys())
     best_synset = None
-    #print(max_intersect)
     weighted_intersect = {}
     # lemma.count()
     if max_intersect == 0:
@@ -148,42 +142,32 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         for syn in synset_overlap_all_list:
             lexemes = syn.lemmas()
             count = 0
-            #print("syn ", syn)
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
                     continue
             for lexeme in syn.lemmas():
-                #print("lexeme ", lexeme)
                 count += lexeme.count()
-                #print("count ", count)
                 if count > max_count:
                     best_synset = syn
                     max_count = count
-                #print("best_synset ", best_synset)
     elif len(overlap_dict[max_intersect]) == 1:
         best_synset = overlap_dict[max_intersect][0]
     else:
         best_synset_list = overlap_dict[max_intersect]
-        #print("best_synset_list:", best_synset_list)
-        #print("max_intersect: ", max_intersect)
 
         max_count = -1
         # most frequent synset
         for syn in best_synset_list:
             lexemes = syn.lemmas()
             count = 0
-            #print("syn ", syn)
             if len(lexemes) == 1:
                 if lexemes[0].name() == lemma:
                     continue
             for lexeme in syn.lemmas():
-                #print("lexeme ", lexeme)
                 count += lexeme.count()
-                #print("count ", count)
                 if count > max_count:
                     best_synset = syn
                     max_count = count
-                #print("best_synset ", best_synset)
 
     # most frequent lexeme from synset
     most_freq_lex = None
@@ -206,7 +190,24 @@ class Word2VecSubst(object):
         self.model = gensim.models.KeyedVectors.load_word2vec_format(filename, binary=True)    
 
     def predict_nearest(self,context : Context) -> str:
-        return None # replace for part 4
+        # Write the method predict_nearest(context) that should first obtain a set of possible synonyms from 
+        # WordNet (either using the method from part 1 or you can rewrite this code as you see fit), and then 
+        # return the synonym that is most similar to the target word, according to the Word2Vec embeddings. In my 
+        # experiments, this approach worked slightly better than the WordNet Frequency baseline and resulted in a 
+        # precision and recall of about 11%.
+        lemma = context.lemma
+        pos = context.pos
+
+        synonyms = get_candidates(lemma, pos)
+        max_sim = -1
+        nearest_synonym = None
+        for synonym in synonyms:
+            sim = model.similarity(lemma.name(), synonym)
+            if sim > max_sim:
+                max_sim = sim
+                nearest_synonym = synonym
+
+        return nearest_synonym
 
 
 class BertPredictor(object):
@@ -224,12 +225,13 @@ if __name__=="__main__":
 
     # At submission time, this program should run your best predictor (part 6).
 
-    #W2VMODEL_FILENAME = 'GoogleNews-vectors-negative300.bin.gz'
-    #predictor = Word2VecSubst(W2VMODEL_FILENAME)
+    W2VMODEL_FILENAME = 'GoogleNews-vectors-negative300.bin.gz'
+    predictor = Word2VecSubst(W2VMODEL_FILENAME)
 
     for context in read_lexsub_xml(sys.argv[1]):
         #print(context)  # useful for debugging
         #prediction = smurf_predictor(context) 
         #prediction = wn_frequency_predictor(context)
-        prediction = wn_simple_lesk_predictor(context)
+        #prediction = wn_simple_lesk_predictor(context)
+        prediction = predictor.predict_nearest(context)
         print("{}.{} {} :: {}".format(context.lemma, context.pos, context.cid, prediction))
