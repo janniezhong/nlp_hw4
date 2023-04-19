@@ -144,13 +144,14 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         for syn in best_synset_list:
             lexemes = syn.lemmas()
             if len(lexemes) == 1:
-                if lexemes[0].name()!=lemma:
-                    for lexeme in syn.lemmas():
-                        count += lexeme.count()
+                if lexemes[0].name() == lemma:
+                    break
+            for lexeme in syn.lemmas():
+                count += lexeme.count()
 
-                        if count > max_count:
-                            best_synset = syn
-                            max_count = count
+                if count > max_count:
+                    best_synset = syn
+                    max_count = count
 
     # most frequent lexeme from synset
     freq_lex_name = None
