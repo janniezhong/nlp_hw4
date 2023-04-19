@@ -74,10 +74,89 @@ def wn_frequency_predictor(context : Context) -> str:
     return max_key 
     
 
-    return None # replace for part 2
-
 def wn_simple_lesk_predictor(context : Context) -> str:
-    return None #replace for part 3        
+
+    # Look at all possible synsets that the target word apperas in. 
+    # Compute the overlap between the definition of the synset and the context of the target word. 
+    # You may want to remove stopwords (function words that don't tell you anything about a word's 
+    # semantics). You can load the list of English stopwords in NLTK like this:
+    # stop_words = stopwords.words('english')
+
+    # You should therefore add the following to the definition:
+
+    # All examples for the synset.
+    # The definition and all examples for all hypernyms of the synset.
+
+
+    # Even with these extensions, the Lesk algorithm will often not produce any overlap. If this is 
+    # the case (or if there is a tie), you should select the most frequent synset (i.e. the Synset 
+    # with which the target word forms the most frequent lexeme, according to WordNet). Then select 
+    # the most frequent lexeme from that synset as the result. One sub-task that you need to solve is 
+    # to tokenize and normalize the definitions and examples in WordNet. You could either look up various
+    # tokenization methods in NLTK or use the tokenize(s) method provided with the code.
+
+    # WSD to select synset
+    lemma = context.lemma
+    pos = context.pos
+
+    stop_words = stopwords.words('english')
+    sentence = context.left_context+context.right_context
+    filtered_sentence = []
+    for word in sentence:
+        if word not in stopwords:
+            filtered_sentence.append(word)
+
+    overlap_dict = {}
+    for syn in wn.synsets(lemma, pos):
+        definition = tokenize(syn.definition())
+        for example in syn.examples():
+            definition.append(tokenize(example))
+        for hypernym_syn in syn.hypernyms():
+            definition.append(tokenize(hypernym_syn.definition()))
+            for example in hypernym_syn.examples():
+                definition.append(tokenize(example))
+
+        intersection = list(set(filtered_sentence) & set(definition))
+        num_intersect = len(list(set(filtered_sentence) & set(definition)))
+        if num_intersect in overlap_dict:
+            overlap_dict[num_intersect].append(syn)
+        else:
+            overlap_dict[num_intersect] = [syn]
+    
+    max_intersect = max(overlap_dict.keys())
+    best_synset = None
+    if len(overlap_dict[max_intersect]) == 1:
+        best_synset = overlap_dict[max_intersect][0]
+    else:
+        best_synset_list = overlap_dict[max_intersect]
+        max_count = -1
+        count = None
+        # most frequent synset
+        for syn in best_synset_list:
+            for lexeme in syn.lemmas():
+                count += lexeme.count()
+
+            if count > max_count:
+                best_synset = syn
+                max_count = count
+
+    # most frequent lexeme from sysnet
+    freq_lex_name = None
+    max_count = 0
+    count = {}
+    # Get the lemma from the synset
+    for lem in best_synset.lemmas():
+        lem_str = str(lem.name())
+        if lem_str != lemma:
+            if lem_str not in count:
+                count[lem_str] = lem.count()
+            else:
+                count[lem_str] += lem.count()
+            if count[lem_str] > max_count:
+                max_count = count[lem_str]
+                freq_lex_name = lem_str
+    
+    return lem_str.replace("_", " ")
    
 
 class Word2VecSubst(object):
@@ -110,5 +189,6 @@ if __name__=="__main__":
     for context in read_lexsub_xml(sys.argv[1]):
         #print(context)  # useful for debugging
         #prediction = smurf_predictor(context) 
-        prediction = wn_frequency_predictor(context)
+        #prediction = wn_frequency_predictor(context)
+        prediction = wn_simple_lesk_predictor(context)
         print("{}.{} {} :: {}".format(context.lemma, context.pos, context.cid, prediction))
