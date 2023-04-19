@@ -120,6 +120,8 @@ def wn_simple_lesk_predictor(context : Context) -> str:
                 definition= definition+tokenize(example)
 
 
+        print("filtered_sentence ", filtered_sentence)
+        print("definition ", definition)
         intersection = list(set(filtered_sentence)&set(definition))
         num_intersect = len(intersection)
         print("num_intersect:", num_intersect, " and intersection:", intersection)
