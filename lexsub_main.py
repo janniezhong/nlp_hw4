@@ -142,7 +142,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         count = 0
         # most frequent synset
         for syn in best_synset_list:
-            lexemes = synset.lemmas()
+            lexemes = syn.lemmas()
             if len(lexemes) == 1:
                 if lexemes[0].name()!=lemma:
                     for lexeme in syn.lemmas():
