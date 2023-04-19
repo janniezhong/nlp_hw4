@@ -240,7 +240,7 @@ class BertPredictor(object):
         sent_tokenized = self.tokenizer.convert_ids_to_tokens(input_toks)
         mask_id = sent_tokenized.index('[MASK]')
         input_mat = np.array(input_toks).reshape((1,-1))
-        outputs = this.model.predict(input_ids)
+        outputs = self.model.predict(input_ids)
         predictions = outputs[0]
 
         print(predictions[0])
