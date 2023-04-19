@@ -231,8 +231,8 @@ if __name__=="__main__":
 
     for context in read_lexsub_xml(sys.argv[1]):
         #print(context)  # useful for debugging
-        #prediction = smurf_predictor(context) 
+        prediction = smurf_predictor(context) 
         #prediction = wn_frequency_predictor(context)
         #prediction = wn_simple_lesk_predictor(context)
-        prediction = predictor.predict_nearest(context)
+        #prediction = predictor.predict_nearest(context)
         print("{}.{} {} :: {}".format(context.lemma, context.pos, context.cid, prediction))
