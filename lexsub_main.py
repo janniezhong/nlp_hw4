@@ -245,8 +245,8 @@ class BertPredictor(object):
 
         print(predictions[0])
 
-        best_words = np.argsort(predictions[0][mask_id])[::-1]
-        tokenizer.convert_ids_to_tokens(best_words)
+        best_word_preds = np.argsort(predictions[0][mask_id])[::-1]
+        best_words = self.tokenizer.convert_ids_to_tokens(best_word_preds)
 
         for word in best_words:
             word_clean = word.replace("_", ' ')
