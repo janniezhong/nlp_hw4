@@ -111,11 +111,11 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     for syn in wn.synsets(lemma, pos):
         definition = tokenize(syn.definition())
         for example in syn.examples():
-            definition= defintion+tokenize(example)
+            definition= definition+tokenize(example)
         for hypernym_syn in syn.hypernyms():
             definition.append(tokenize(hypernym_syn.definition()))
             for example in hypernym_syn.examples():
-                definition= defintion+tokenize(example)
+                definition= definition+tokenize(example)
 
 
         intersection = set(filtered_sentence).intersection(definition)
