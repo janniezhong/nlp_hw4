@@ -120,46 +120,46 @@ def wn_simple_lesk_predictor(context : Context) -> str:
                 definition= definition+tokenize(example)
 
 
-        print("filtered_sentence ", filtered_sentence)
-        print("definition ", definition)
+        #print("filtered_sentence ", filtered_sentence)
+        #print("definition ", definition)
         intersection = list(set(filtered_sentence)&set(definition))
         num_intersect = len(intersection)
-        print("num_intersect:", num_intersect, " and intersection:", intersection)
+        #print("num_intersect:", num_intersect, " and intersection:", intersection)
         if num_intersect in overlap_dict.keys():
             overlap_dict[num_intersect].append(syn)
         else:
             overlap_dict[num_intersect] = [syn]
-    print("overlap_dict: ", overlap_dict)
+    #print("overlap_dict: ", overlap_dict)
     
     #compute the max overlap
     max_intersect = max(overlap_dict.keys())
     best_synset = None
-    print(max_intersect)
+    #print(max_intersect)
     weighted_intersect = {}
     # lemma.count()
     if len(overlap_dict[max_intersect]) == 1:
         best_synset = overlap_dict[max_intersect][0]
     else:
         best_synset_list = overlap_dict[max_intersect]
-        print("best_synset_list:", best_synset_list)
+        #print("best_synset_list:", best_synset_list)
 
         max_count = -1
         # most frequent synset
         for syn in best_synset_list:
             lexemes = syn.lemmas()
             count = 0
-            print("syn ", syn)
+            #print("syn ", syn)
             # if len(lexemes) == 1:
             #     if lexemes[0].name() == lemma:
             #         continue
             for lexeme in syn.lemmas():
-                print("lexeme ", lexeme)
+                #print("lexeme ", lexeme)
                 count += lexeme.count()
-                print("count ", count)
+                #print("count ", count)
                 if count > max_count:
                     best_synset = syn
                     max_count = count
-                print("best_synset ", best_synset)
+                #print("best_synset ", best_synset)
 
     # most frequent lexeme from synset
     most_freq_lex = None
