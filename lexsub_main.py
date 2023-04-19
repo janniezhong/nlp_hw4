@@ -218,7 +218,42 @@ class BertPredictor(object):
         self.model = transformers.TFDistilBertForMaskedLM.from_pretrained('distilbert-base-uncased')
 
     def predict(self, context : Context) -> str:
-        return None # replace for part 5
+        lemma = context.lemma
+        pos = context.pos
+
+        synonyms = get_candidates(lemma, pos)
+        sentence = ""
+        for tok in context.left_context:
+            if tok.isalpha():
+                sentence = sentence + ' ' + tok
+            else:
+                sentence += tok
+
+        sentence = sentence + ' ' + '[MASK]'
+        for tok in context.right_context:
+            if tok.isalpha():
+                sentence = sentence + ' ' + tok
+            else:
+                sentence += tok
+
+        input_toks = self.tokenizer.encode(sentence)
+        sent_tokenized = self.tokenizer.convert_ids_to_tokens(input_toks)
+        mask_id = sent_tokenized.index('[MASK]')
+        input_mat = np.array(input_toks).reshape((1,-1))
+        outputs = this.model.predict(input_ids)
+        predictions = outputs[0]
+
+        print(predictions[0])
+
+        best_words = np.argsort(predictions[0][mask_id])[::-1]
+        tokenizer.convert_ids_to_tokens(best_words)
+
+        for word in best_words:
+            word_clean = word.replace("_", ' ')
+            if word_clean in synonyms:
+                return word_clean
+
+        return ""
 
     
 
@@ -227,12 +262,15 @@ if __name__=="__main__":
     # At submission time, this program should run your best predictor (part 6).
 
     W2VMODEL_FILENAME = 'GoogleNews-vectors-negative300.bin.gz'
-    predictor = Word2VecSubst(W2VMODEL_FILENAME)
+    # predictor = Word2VecSubst(W2VMODEL_FILENAME)
+    predictor = BertPredictor()
 
+    
     for context in read_lexsub_xml(sys.argv[1]):
         #print(context)  # useful for debugging
-        prediction = smurf_predictor(context) 
+        # prediction = smurf_predictor(context) 
         #prediction = wn_frequency_predictor(context)
         #prediction = wn_simple_lesk_predictor(context)
         #prediction = predictor.predict_nearest(context)
+        prediction = predictor.predict()
         print("{}.{} {} :: {}".format(context.lemma, context.pos, context.cid, prediction))
