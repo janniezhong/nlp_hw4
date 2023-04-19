@@ -108,6 +108,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             filtered_sentence.append(word)
 
     overlap_dict = {}
+    intersection = []
     for syn in wn.synsets(lemma, pos):
         definition = tokenize(syn.definition())
         for example in syn.examples():
@@ -117,8 +118,8 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             for example in hypernym_syn.examples():
                 definition.append(tokenize(example))
 
-        #intersection = list(set(filtered_sentence) & set(definition))
-        num_intersect = len(list(set(filtered_sentence) & set(definition)))
+        intersection = list(set(filtered_sentence) & set(definition))
+        num_intersect = len(intersection)
         if num_intersect in overlap_dict:
             overlap_dict[num_intersect].append(syn)
         else:
