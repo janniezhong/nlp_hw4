@@ -100,6 +100,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     lemma = context.lemma
     pos = context.pos
 
+    # context of the target word
     stop_words = stopwords.words('english')
     sentence = context.left_context+context.right_context
     filtered_sentence = []
@@ -107,6 +108,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         if word not in stop_words:
             filtered_sentence.append(word)
 
+    # iterate through the synsets to find the amount of overlap
     overlap_dict = {}
     for syn in wn.synsets(lemma, pos):
         definition = tokenize(syn.definition())
@@ -124,9 +126,14 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             overlap_dict[num_intersect].append(syn)
         else:
             overlap_dict[num_intersect] = [syn]
+        print(overlap_dict)
     
+    #compute the max overlap
     max_intersect = max(overlap_dict.keys())
     best_synset = None
+    
+    weighted_intersect = {}
+    # lemma.count()
     if len(overlap_dict[max_intersect]) == 1:
         best_synset = overlap_dict[max_intersect][0]
     else:
@@ -135,14 +142,17 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         count = 0
         # most frequent synset
         for syn in best_synset_list:
-            for lexeme in syn.lemmas():
-                count += lexeme.count()
+            lexemes = synset.lemmas()
+            if len(lexemes) == 1:
+                if lexemes[0].name()!=lemma:
+                    for lexeme in syn.lemmas():
+                        count += lexeme.count()
 
-            if count > max_count:
-                best_synset = syn
-                max_count = count
+                        if count > max_count:
+                            best_synset = syn
+                            max_count = count
 
-    # most frequent lexeme from sysnet
+    # most frequent lexeme from synset
     freq_lex_name = None
     max_count = 0
     count = {}
@@ -158,7 +168,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
                 max_count = count[lem_str]
                 freq_lex_name = lem_str
     
-    return lem_str.replace("_", " ")
+    return freq_lex_name.replace("_", " ")
    
 
 class Word2VecSubst(object):
