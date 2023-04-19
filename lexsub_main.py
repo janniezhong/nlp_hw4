@@ -28,7 +28,7 @@ def get_candidates(lemma, pos) -> List[str]:
     candidates = []
     synsets = wn.synsets(lemma, pos)
     for s in synsets:
-        for lem in s:
+        for lem in s.lemmas():
             lem_str = str(lem.name())
             lem_str = lem_str.replace("_", " ")
             if lem_str not in candidates and lem_str != lemma:
@@ -62,7 +62,7 @@ def wn_frequency_predictor(context : Context) -> str:
     count = {}
     synsets = wn.synsets(context.lemma, context.pos)
     for s in synsets:
-        for lem in s:
+        for lem in s.lemmas():
             lem_str = str(lem.name())
             lem_str = lem_str.replace("_", " ")
             if lem_str != lemma:
