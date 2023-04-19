@@ -41,7 +41,7 @@ def get_more_candidates(lemma, pos) -> List[str]:
     candidates = []
     synsets = wn.synsets(lemma, pos)
     for s in synsets:
-        related_syns = [s] + s.hypernyms() + s.hyponyms() #+ s.member_holonyms() + s.member_meronyms()
+        related_syns = [s] + s.hypernyms() + s.hyponyms() + s.member_holonyms() + s.member_meronyms()
         for s2 in related_syns:
             for lem in s2.lemmas():
                 lem_str = str(lem.name())
