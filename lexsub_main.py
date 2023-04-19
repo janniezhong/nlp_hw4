@@ -272,5 +272,5 @@ if __name__=="__main__":
         #prediction = wn_frequency_predictor(context)
         #prediction = wn_simple_lesk_predictor(context)
         #prediction = predictor.predict_nearest(context)
-        prediction = predictor.predict()
+        prediction = predictor.predict(context)
         print("{}.{} {} :: {}".format(context.lemma, context.pos, context.cid, prediction))
