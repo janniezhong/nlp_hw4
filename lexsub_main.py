@@ -65,7 +65,7 @@ def wn_frequency_predictor(context : Context) -> str:
         for lem in s.lemmas():
             lem_str = str(lem.name())
             lem_str = lem_str.replace("_", " ")
-            if lem_str != lemma:
+            if lem_str != context.lemma:
                 count[lem_str] += lem.count()
     max_key = max(count, key = count.get)
     return max_key 
