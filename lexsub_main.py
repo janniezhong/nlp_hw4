@@ -126,7 +126,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             overlap_dict[num_intersect].append(syn)
         else:
             overlap_dict[num_intersect] = [syn]
-        # print(overlap_dict)
+        print("overlap_dict: ", overlap_dict)
     
     #compute the max overlap
     max_intersect = max(overlap_dict.keys())
@@ -138,6 +138,8 @@ def wn_simple_lesk_predictor(context : Context) -> str:
         best_synset = overlap_dict[max_intersect][0]
     else:
         best_synset_list = overlap_dict[max_intersect]
+        print("best_synset_list:", best_synset_list)
+
         max_count = -1
         # most frequent synset
         for syn in best_synset_list:
