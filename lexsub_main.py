@@ -103,7 +103,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     sentence = context.left_context+context.right_context
     filtered_sentence = []
     for word in sentence:
-        if word not in stopwords:
+        if word not in stop_words:
             filtered_sentence.append(word)
 
     overlap_dict = {}
