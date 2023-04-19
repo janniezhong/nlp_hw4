@@ -201,6 +201,7 @@ class Word2VecSubst(object):
         synonyms = get_candidates(lemma, pos)
         max_sim = -1
         nearest_synonym = None
+        print("here?")
         for synonym in synonyms:
             print(synonym)
             print(lemma)
