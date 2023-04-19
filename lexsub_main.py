@@ -137,7 +137,26 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     #print(max_intersect)
     weighted_intersect = {}
     # lemma.count()
-    if len(overlap_dict[max_intersect]) == 1:
+    if max_intersect == 0:
+        synset_overlap_all_list = set().union(*overlap_dict.values())
+        max_count = -1
+        # most frequent synset
+        for syn in synset_overlap_all_list:
+            lexemes = syn.lemmas()
+            count = 0
+            #print("syn ", syn)
+            if len(lexemes) == 1:
+                if lexemes[0].name() == lemma:
+                    continue
+            for lexeme in syn.lemmas():
+                #print("lexeme ", lexeme)
+                count += lexeme.count()
+                #print("count ", count)
+                if count > max_count:
+                    best_synset = syn
+                    max_count = count
+                #print("best_synset ", best_synset)
+    elif len(overlap_dict[max_intersect]) == 1:
         best_synset = overlap_dict[max_intersect][0]
     else:
         best_synset_list = overlap_dict[max_intersect]
@@ -149,9 +168,9 @@ def wn_simple_lesk_predictor(context : Context) -> str:
             lexemes = syn.lemmas()
             count = 0
             #print("syn ", syn)
-            # if len(lexemes) == 1:
-            #     if lexemes[0].name() == lemma:
-            #         continue
+            if len(lexemes) == 1:
+                if lexemes[0].name() == lemma:
+                    continue
             for lexeme in syn.lemmas():
                 #print("lexeme ", lexeme)
                 count += lexeme.count()
