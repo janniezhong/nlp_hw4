@@ -290,10 +290,10 @@ if __name__=="__main__":
         #print(context)  # useful for debugging
         # prediction = smurf_predictor(context) 
         #prediction = wn_frequency_predictor(context)
-        #prediction = wn_simple_lesk_predictor(context)
+        prediction = wn_simple_lesk_predictor(context)
 
         #part 4
-        prediction = predictor.predict_nearest(context)
+        #prediction = predictor.predict_nearest(context)
         # part 5
         #prediction = predictor.predict(context)
 
