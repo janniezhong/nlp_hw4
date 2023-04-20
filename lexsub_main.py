@@ -217,14 +217,16 @@ class Word2VecSubst(object):
         synonyms = get_candidates(lemma, pos)
         max_sim = -1
         nearest_synonym = None
+        left_context = context.left_context[-1]
+        right_context = context.right_context[0]
         for synonym in synonyms:
             if synonym in self.model.key_to_index:
                 sim = 0
                 if lemma in self.model.key_to_index:
                     sim = 0.5*self.model.similarity(synonym, lemma)
-                if context.left_context in self.model.key_to_index:
+                if left_context in self.model.key_to_index:
                     sim += 0.25*self.model.similarity(synonym, context.left_context)
-                if context.right_context in self.model.key_to_index:
+                if right_context in self.model.key_to_index:
                     sim += 0.25*self.model.similarity(synonym, context.right_context)
                 if sim > max_sim:
                     max_sim = sim
