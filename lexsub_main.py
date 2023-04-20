@@ -203,7 +203,7 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     return most_freq_lex.name().replace("_", " ")
 
 
-    def wn_better_lesk_predictor(context : Context) -> str:
+def wn_better_lesk_predictor(context : Context) -> str:
 
     # Look at all possible synsets that the target word apperas in. 
     # Compute the overlap between the definition of the synset and the context of the target word. 
