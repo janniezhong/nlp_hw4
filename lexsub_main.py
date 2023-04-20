@@ -28,6 +28,7 @@ def get_candidates(lemma, pos) -> List[str]:
     # Part 1
     candidates = []
     synsets = wn.synsets(lemma, pos)
+    print(synsets)
     for s in synsets:
         #print("get_candidates:", s)
         for lem in s.lemmas():
@@ -43,6 +44,8 @@ def get_more_candidates(lemma, pos) -> List[str]:
     synsets = wn.synsets(lemma, pos)
     for s in synsets:
         related_syns = [s] + s.hypernyms() + s.hyponyms() + s.member_holonyms() + s.member_meronyms()
+        print(related_syns)
+        print(len(related_syns))
         for s2 in related_syns:
             #print("get_more_candidates:", s)
             for lem in s2.lemmas():
