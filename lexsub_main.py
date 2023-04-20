@@ -203,117 +203,6 @@ def wn_simple_lesk_predictor(context : Context) -> str:
     return most_freq_lex.name().replace("_", " ")
 
 
-def wn_better_lesk_predictor(context : Context) -> str:
-
-    # Look at all possible synsets that the target word apperas in. 
-    # Compute the overlap between the definition of the synset and the context of the target word. 
-    # You may want to remove stopwords (function words that don't tell you anything about a word's 
-    # semantics). You can load the list of English stopwords in NLTK like this:
-    # stop_words = stopwords.words('english')
-
-    # You should therefore add the following to the definition:
-
-    # All examples for the synset.
-    # The definition and all examples for all hypernyms of the synset.
-
-
-    # Even with these extensions, the Lesk algorithm will often not produce any overlap. If this is 
-    # the case (or if there is a tie), you should select the most frequent synset (i.e. the Synset 
-    # with which the target word forms the most frequent lexeme, according to WordNet). Then select 
-    # the most frequent lexeme from that synset as the result. One sub-task that you need to solve is 
-    # to tokenize and normalize the definitions and examples in WordNet. You could either look up various
-    # tokenization methods in NLTK or use the tokenize(s) method provided with the code.
-
-    # WSD to select synset
-    lemma = context.lemma
-    pos = context.pos
-
-    # context of the target word
-    stop_words = stopwords.words('english')
-    sentence = context.left_context+context.right_context
-    filtered_sentence = []
-    for word in sentence:
-        if word not in stop_words:
-            filtered_sentence.append(word)
-
-    # iterate through the synsets to find the amount of overlap
-    overlap_dict = {}
-    for syn in wn.synsets(lemma, pos):
-        definition = tokenize(syn.definition())
-        for example in syn.examples():
-            definition= definition+tokenize(example)
-
-        othernyms = syn.hypernyms() + syn.hyponyms() + syn.member_holonyms() + syn.root_hypernyms()
-        for othernym in othernyms:
-            definition= definition+tokenize(othernym.definition())
-            for example in othernym.examples():
-                definition = definition+tokenize(example)
-
-        lexemes = syn.lemmas()
-        if len(lexemes) == 1:
-            if lexemes[0].name() == lemma:
-                continue
-        intersection = list(set(filtered_sentence)&set(definition))
-        num_intersect = len(intersection)
-        if num_intersect in overlap_dict.keys():
-            overlap_dict[num_intersect].append(syn)
-        else:
-            overlap_dict[num_intersect] = [syn]
-    
-    #compute the max overlap
-    max_intersect = max(overlap_dict.keys())
-    best_synset = None
-    weighted_intersect = {}
-    # lemma.count()
-    if max_intersect == 0:
-        synset_overlap_all_list = set().union(*overlap_dict.values())
-        max_count = -1
-        # most frequent synset
-        for syn in synset_overlap_all_list:
-            lexemes = syn.lemmas()
-            count = 0
-            if len(lexemes) == 1:
-                if lexemes[0].name() == lemma:
-                    continue
-            for lexeme in syn.lemmas():
-                count += lexeme.count()
-                if count > max_count:
-                    best_synset = syn
-                    max_count = count
-    elif len(overlap_dict[max_intersect]) == 1:
-        best_synset = overlap_dict[max_intersect][0]
-    else:
-        best_synset_list = overlap_dict[max_intersect]
-
-        max_count = -1
-        # most frequent synset
-        for syn in best_synset_list:
-            lexemes = syn.lemmas()
-            count = 0
-            if len(lexemes) == 1:
-                if lexemes[0].name() == lemma:
-                    continue
-            for lexeme in syn.lemmas():
-                count += lexeme.count()
-                if count > max_count:
-                    best_synset = syn
-                    max_count = count
-
-    # most frequent lexeme from synset
-    most_freq_lex = None
-    max_count = 0
-    # Get the lemma from the synset
-    for lem in best_synset.lemmas():
-        if lem.name() != lemma:
-            if lem.count() > max_count:
-                max_count = lem.count()
-                most_freq_lex = lem
-    if max_count == 0:
-        most_freq_lex = best_synset.lemmas()[0]
-    
-    return most_freq_lex.name().replace("_", " ")
-   
-
 class Word2VecSubst(object):
         
     def __init__(self, filename):
@@ -334,6 +223,27 @@ class Word2VecSubst(object):
         for synonym in synonyms:
             if synonym in self.model.key_to_index:
                 sim = self.model.similarity(lemma, synonym)
+                if sim > max_sim:
+                    max_sim = sim
+                    nearest_synonym = synonym
+
+        return nearest_synonym
+
+    def predict_nearest_better(self,context : Context) -> str:
+        # Write the method predict_nearest(context) that should first obtain a set of possible synonyms from 
+        # WordNet (either using the method from part 1 or you can rewrite this code as you see fit), and then 
+        # return the synonym that is most similar to the target word, according to the Word2Vec embeddings. In my 
+        # experiments, this approach worked slightly better than the WordNet Frequency baseline and resulted in a 
+        # precision and recall of about 11%.
+        lemma = context.lemma
+        pos = context.pos
+
+        synonyms = get_candidates(lemma, pos)
+        max_sim = -1
+        nearest_synonym = None
+        for synonym in synonyms:
+            if synonym in self.model.key_to_index:
+                sim = 0.5*self.model.similarity(lemma, synonym)+0.25*self.model.similarity(left_context, synonym)+0.25*self.model.similarity(right_context, synonym)
                 if sim > max_sim:
                     max_sim = sim
                     nearest_synonym = synonym
@@ -436,8 +346,8 @@ if __name__=="__main__":
         #print(context)  # useful for debugging
         # prediction = smurf_predictor(context) 
         #prediction = wn_frequency_predictor(context)
-        prediction = wn_simple_lesk_predictor(context)
-        #prediction = wn_better_lesk_predictor(context)
+        #prediction = wn_simple_lesk_predictor(context)
         #prediction = predictor.predict_nearest(context)
+        prediction = predictor.predict_nearest_better(context)
         # prediction = predictor.best_predict(context)
         print("{}.{} {} :: {}".format(context.lemma, context.pos, context.cid, prediction))
