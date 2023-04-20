@@ -282,8 +282,8 @@ if __name__=="__main__":
     # At submission time, this program should run your best predictor (part 6).
 
     W2VMODEL_FILENAME = 'GoogleNews-vectors-negative300.bin.gz'
-    #predictor = Word2VecSubst(W2VMODEL_FILENAME)
-    predictor = BertPredictor()
+    predictor = Word2VecSubst(W2VMODEL_FILENAME)
+    #predictor = BertPredictor()
 
     
     for context in read_lexsub_xml(sys.argv[1]):
@@ -293,9 +293,9 @@ if __name__=="__main__":
         #prediction = wn_simple_lesk_predictor(context)
 
         #part 4
-        #prediction = predictor.predict_nearest(context)
+        prediction = predictor.predict_nearest(context)
         # part 5
-        prediction = predictor.predict(context)
+        #prediction = predictor.predict(context)
 
         #part 6
         #prediction = predictor.predict_nearest_better(context)
