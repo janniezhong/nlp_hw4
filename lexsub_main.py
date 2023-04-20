@@ -338,8 +338,8 @@ if __name__=="__main__":
     # At submission time, this program should run your best predictor (part 6).
 
     W2VMODEL_FILENAME = 'GoogleNews-vectors-negative300.bin.gz'
-    # predictor = Word2VecSubst(W2VMODEL_FILENAME)
-    predictor = BertPredictor()
+    predictor = Word2VecSubst(W2VMODEL_FILENAME)
+    #predictor = BertPredictor()
 
     
     for context in read_lexsub_xml(sys.argv[1]):
