@@ -225,9 +225,9 @@ class Word2VecSubst(object):
                 if lemma in self.model.key_to_index:
                     sim = 0.5*self.model.similarity(synonym, lemma)
                 if left_context in self.model.key_to_index:
-                    sim += 0.25*self.model.similarity(synonym, context.left_context)
+                    sim += 0.25*self.model.similarity(synonym, left_context)
                 if right_context in self.model.key_to_index:
-                    sim += 0.25*self.model.similarity(synonym, context.right_context)
+                    sim += 0.25*self.model.similarity(synonym, right_context)
                 if sim > max_sim:
                     max_sim = sim
                     nearest_synonym = synonym
