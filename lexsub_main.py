@@ -28,31 +28,12 @@ def get_candidates(lemma, pos) -> List[str]:
     # Part 1
     candidates = []
     synsets = wn.synsets(lemma, pos)
-    print(synsets)
     for s in synsets:
-        #print("get_candidates:", s)
         for lem in s.lemmas():
             lem_str = str(lem.name())
             lem_str = lem_str.replace("_", " ")
             if lem_str not in candidates and lem_str != lemma:
                 candidates.append(lem_str)
-    return candidates 
-
-def get_more_candidates(lemma, pos) -> List[str]:
-    # Part 1
-    candidates = []
-    synsets = wn.synsets(lemma, pos)
-    for s in synsets:
-        related_syns = [s] + s.hypernyms() + s.hyponyms() + s.member_holonyms() + s.member_meronyms()
-        print(related_syns)
-        print(len(related_syns))
-        for s2 in related_syns:
-            #print("get_more_candidates:", s)
-            for lem in s2.lemmas():
-                lem_str = str(lem.name())
-                lem_str = lem_str.replace("_", " ")
-                if lem_str not in candidates and lem_str != lemma:
-                    candidates.append(lem_str)
     return candidates 
 
 def smurf_predictor(context : Context) -> str:
@@ -230,11 +211,6 @@ class Word2VecSubst(object):
         return nearest_synonym
 
     def predict_nearest_better(self,context : Context) -> str:
-        # Write the method predict_nearest(context) that should first obtain a set of possible synonyms from 
-        # WordNet (either using the method from part 1 or you can rewrite this code as you see fit), and then 
-        # return the synonym that is most similar to the target word, according to the Word2Vec embeddings. In my 
-        # experiments, this approach worked slightly better than the WordNet Frequency baseline and resulted in a 
-        # precision and recall of about 11%.
         lemma = context.lemma
         pos = context.pos
 
@@ -243,7 +219,7 @@ class Word2VecSubst(object):
         nearest_synonym = None
         for synonym in synonyms:
             if synonym in self.model.key_to_index:
-                sim = 0.5*self.model.similarity(lemma, synonym)+0.25*self.model.similarity(left_context, synonym)+0.25*self.model.similarity(right_context, synonym)
+                sim = 0.5*self.model.similarity(synonym, lemma)+0.25*self.model.similarity(synonym, context.left_context)+0.25*self.model.similarity(synonym, context.right_context)
                 if sim > max_sim:
                     max_sim = sim
                     nearest_synonym = synonym
@@ -292,46 +268,6 @@ class BertPredictor(object):
                 return word_clean
 
         return ""
-
-    # def best_predict(self, context : Context) -> str:
-    #     lemma = context.lemma
-    #     pos = context.pos
-    #     print(len(get_candidates(lemma, pos)))
-    #     print(len(get_more_candidates(lemma, pos)))
-    #     get_more_candidates(lemma, pos)
-    #     synonyms = get_candidates(lemma, pos)
-    #     sentence = ""
-    #     for tok in context.left_context:
-    #         if tok.isalpha():
-    #             sentence = sentence + ' ' + tok
-    #         else:
-    #             sentence += tok
-
-    #     sentence = sentence + ' ' + '[MASK]'
-    #     for tok in context.right_context:
-    #         if tok.isalpha():
-    #             sentence = sentence + ' ' + tok
-    #         else:
-    #             sentence += tok
-
-    #     input_toks = self.tokenizer.encode(sentence)
-    #     sent_tokenized = self.tokenizer.convert_ids_to_tokens(input_toks)
-    #     mask_id = sent_tokenized.index('[MASK]')
-    #     input_mat = np.array(input_toks).reshape((1,-1))
-    #     outputs = self.model.predict(input_mat,verbose = None)
-    #     predictions = outputs[0]
-
-    #     best_word_preds = np.argsort(predictions[0][mask_id])[::-1]
-    #     best_words = self.tokenizer.convert_ids_to_tokens(best_word_preds)
-
-    #     for word in best_words:
-    #         word_clean = word.replace("_", ' ')
-    #         if word_clean in synonyms:
-    #             return word_clean
-
-    #     return ""
-
-    
 
 if __name__=="__main__":
 
